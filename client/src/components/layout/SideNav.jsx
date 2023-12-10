@@ -1,29 +1,29 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+// import axios from "axios";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 const SideNav = () => {
   const [isExpanded, setExpanded] = useState(false);
-  const [allTransaction, setAllTransaction] = useState([]);
+  // const [allTransaction, setAllTransaction] = useState([]);
 
   const toggleExpand = (e) => {
     e.preventDefault();
     setExpanded(!isExpanded);
   };
-  useEffect(() => {
-    const getAllTransactions = async () => {
-      try {
-        const res = await axios.get(
-          `http://localhost:/transactions/get-transaction`
-        );
-        setAllTransaction(res.data);
-        console.log(res.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    getAllTransactions();
-  }, []);
+  // const getAllTransactions = async () => {
+  //   try {
+  //     const res = await axios.get(
+  //       `http://localhost:/transactions/get-transaction`
+  //     );
+  //     setAllTransaction(res.data);
+  //     console.log(res.data);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+  // useEffect(() => {
+  //   getAllTransactions();
+  // }, []);
 
   return (
     <div>
