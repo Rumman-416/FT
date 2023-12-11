@@ -40,8 +40,10 @@ const AddTransaction = () => {
 
   const getAllTransactions = async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:8080/transactions/get-transaction`
+      const user = JSON.parse(localStorage.getItem("user"));
+      const res = await axios.post(
+        `http://localhost:8080/transactions/get-only-transactions`,
+        { userid: user._id }
       );
       setAllTransaction(res.data);
       console.log(res.data);
