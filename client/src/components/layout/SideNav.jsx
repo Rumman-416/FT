@@ -10,20 +10,6 @@ const SideNav = () => {
     e.preventDefault();
     setExpanded(!isExpanded);
   };
-  // const getAllTransactions = async () => {
-  //   try {
-  //     const res = await axios.get(
-  //       `http://localhost:/transactions/get-transaction`
-  //     );
-  //     setAllTransaction(res.data);
-  //     console.log(res.data);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-  // useEffect(() => {
-  //   getAllTransactions();
-  // }, []);
 
   return (
     <div>
