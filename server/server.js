@@ -20,6 +20,9 @@ app.use(express.json());
 app.use(cors());
 
 //routes
+app.get("/", (req, res) => {
+  res.send("Hello World");
+});
 //user routes
 app.use("/users", require("./routes/userRoute"));
 
