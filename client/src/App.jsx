@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 
 const ShowData = React.lazy(() => import("./pages/ShowData"));
 const AddTransaction = React.lazy(() => import("./pages/AddTransaction"));
+const Prediction = React.lazy(() => import("./pages/Prediction"));
 const App = () => {
   return (
     <>
@@ -25,6 +26,16 @@ const App = () => {
             <ProtedtedRoutes>
               <Suspense>
                 <ShowData />
+              </Suspense>
+            </ProtedtedRoutes>
+          }
+        />
+        <Route
+          path="/predict-data"
+          element={
+            <ProtedtedRoutes>
+              <Suspense>
+                <Prediction />
               </Suspense>
             </ProtedtedRoutes>
           }

@@ -4,8 +4,6 @@ import { Link } from "react-router-dom";
 
 const SideNav = () => {
   const [isExpanded, setExpanded] = useState(false);
-  // const [allTransaction, setAllTransaction] = useState([]);
-
   const toggleExpand = (e) => {
     e.preventDefault();
     setExpanded(!isExpanded);
@@ -46,8 +44,21 @@ const SideNav = () => {
           >
             Home
           </Link>
-          <Link className="block py-2 text-[#23253a] hover:text-[#fff]">
+          <Link
+            className="block py-2 text-[#23253a] hover:text-[#fff]"
+            to={{
+              pathname: "/show-data",
+            }}
+          >
             Transaction
+          </Link>
+          <Link
+            className="block py-2 text-[#23253a] hover:text-[#fff]"
+            to={{
+              pathname: "/predict-data",
+            }}
+          >
+            Prediction
           </Link>
         </div>
       </div>

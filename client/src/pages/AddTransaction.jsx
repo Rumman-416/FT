@@ -23,7 +23,7 @@ const AddTransaction = () => {
       const user = JSON.parse(localStorage.getItem("user"));
       setLoading(true);
       const response = await axios.post(
-        "https://temp-ft-crud.onrender.com/transactions/add-transaction",
+        "http://localhost:8080/transactions/add-transaction",
         {
           ...values,
           userid: user._id,
