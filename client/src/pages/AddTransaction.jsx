@@ -23,7 +23,7 @@ const AddTransaction = () => {
       const user = JSON.parse(localStorage.getItem("user"));
       setLoading(true);
       const response = await axios.post(
-        "http://localhost:8080/transactions/add-transaction",
+        "https://temp-ft-crud.onrender.com/transactions/add-transaction",
         {
           ...values,
           userid: user._id,
@@ -42,7 +42,7 @@ const AddTransaction = () => {
     try {
       const user = JSON.parse(localStorage.getItem("user"));
       const res = await axios.post(
-        `http://localhost:8080/transactions/get-only-transactions`,
+        `https://temp-ft-crud.onrender.com/transactions/get-only-transactions`,
         { userid: user._id }
       );
       setAllTransaction(res.data);
