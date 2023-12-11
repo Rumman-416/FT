@@ -14,7 +14,7 @@ const Register = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      await axios.post(`https://temp-ft-crud.onrender.com/users/register`, {
+      await axios.post(`http://localhost:8080/users/register`, {
         name,
         email,
         password,

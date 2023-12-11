@@ -21,7 +21,7 @@ const ShowData = () => {
     try {
       const user = JSON.parse(localStorage.getItem("user"));
       const res = await axios.post(
-        `https://temp-ft-crud.onrender.com/transactions/get-transactions`,
+        `http://localhost:8080/transactions/get-transactions`,
         { userid: user._id, frequency, selectedDate, type }
       );
       setAllTransaction(res.data);

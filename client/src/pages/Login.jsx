@@ -13,13 +13,10 @@ const Login = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      const { data } = await axios.post(
-        "https://temp-ft-crud.onrender.com/users/login",
-        {
-          email,
-          password,
-        }
-      );
+      const { data } = await axios.post("http://localhost:8080/users/login", {
+        email,
+        password,
+      });
       setLoading(false);
       window.alert(`login successful`);
       localStorage.setItem(
