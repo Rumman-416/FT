@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import * as tf from "@tensorflow/tfjs";
 import ReactEcharts from "echarts-for-react";
 
 const LinearRegression = ({ data, selectedCategory }) => {
@@ -12,7 +11,6 @@ const LinearRegression = ({ data, selectedCategory }) => {
         return;
       }
 
-      // Prepare data for selected category
       const filteredData = data.filter(
         (item) => item.category === selectedCategory
       );
@@ -22,49 +20,27 @@ const LinearRegression = ({ data, selectedCategory }) => {
         return;
       }
 
-      const xs = tf.tensor2d(
-        filteredData.map(() => 1),
-        [filteredData.length, 1]
-      );
-      const ys = tf.tensor2d(
-        filteredData.map((item) => item.amount),
-        [filteredData.length, 1]
+      const totalAmount = filteredData.reduce(
+        (acc, item) => acc + item.amount,
+        0
       );
 
-      // Create a simple linear regression model
-      const model = tf.sequential();
-      model.add(tf.layers.dense({ units: 1, inputShape: [1] }));
-      model.compile({ optimizer: "sgd", loss: "meanSquaredError" });
-
-      // Train the model
-      await model.fit(xs, ys, { epochs: 100 });
-
-      // Make a prediction for the next month
-      const newInput = tf.tensor2d([[1]]);
-      const predictionTensor = model.predict(newInput);
-      const [predictedAmount] = Array.from(predictionTensor.dataSync());
-      setPrediction(predictedAmount);
+      setPrediction(totalAmount / filteredData.length);
     };
 
     runLinearRegression();
   }, [data, selectedCategory]);
 
-  // Prepare data for Echarts
   const chartData = data
-    .map((item) => ({
-      type: item.type,
-      amount: item.amount,
-      date: item.date, // Use the original date value from the database
-    }))
-    .sort((a, b) => new Date(a.date) - new Date(b.date)) // Sort by date
     .map((item) => ({
       type: item.type,
       amount: item.amount,
       date: new Date(item.date).toLocaleString("default", {
         month: "long",
         year: "numeric",
-      }), // Format the date for readability
-    }));
+      }),
+    }))
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
 
   const getOption = () => {
     const colors = {
@@ -72,19 +48,16 @@ const LinearRegression = ({ data, selectedCategory }) => {
       regressionLine: "#0000FF",
     };
 
-    const uniqueDates = Array.from(new Set(chartData.map((item) => item.date)));
-    const reversedDates = uniqueDates.reverse();
+    const uniqueDates = [
+      ...new Set(chartData.map((item) => item.date)),
+    ].reverse();
 
-    const aggregatedExpenseData = reversedDates.map((date) => {
-      const totalExpense = chartData
+    const aggregatedExpenseData = uniqueDates.map((date) => ({
+      date,
+      totalExpense: chartData
         .filter((item) => item.type === "expense" && item.date === date)
-        .reduce((acc, item) => acc + item.amount, 0);
-
-      return {
-        date,
-        totalExpense,
-      };
-    });
+        .reduce((acc, item) => acc + item.amount, 0),
+    }));
 
     const regressionLineData = Array(aggregatedExpenseData.length).fill(
       prediction !== null ? prediction : 0
@@ -116,7 +89,7 @@ const LinearRegression = ({ data, selectedCategory }) => {
       series: [
         {
           name: "Expense",
-          type: "line", // Changed to line chart for total expenses
+          type: "line",
           data: aggregatedExpenseData.map((item) => ({
             value: item.totalExpense,
             itemStyle: { color: colors.expense },
@@ -124,7 +97,7 @@ const LinearRegression = ({ data, selectedCategory }) => {
           label: {
             show: true,
             position: "top",
-            formatter: "{c}", // Display the total expense value on the line
+            formatter: "{c}",
           },
         },
         {
