@@ -64,8 +64,8 @@ const Login = () => {
           </Link>
           <input
             type="submit"
-            value="Register"
-            className="border-2 bg-slate-500 "
+            value="Registerrrrrrrr"
+            className="border-5 bg-yellow-500 "
             onClick={submitHandler}
           />
         </form>
