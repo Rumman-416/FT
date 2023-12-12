@@ -19,7 +19,7 @@ const Header = () => {
   };
   return (
     <div>
-      <nav className=" bg-blue-300 flex gap-5">
+      <nav className=" bg-blue-300 flex gap-5 h-20">
         <SideNav />
         <ul>
           <Link to="/">home</Link>
