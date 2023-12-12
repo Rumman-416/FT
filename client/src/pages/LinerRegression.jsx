@@ -12,25 +12,30 @@ import {
 
 const LinearRegression = ({ data, selectedCategory }) => {
   const [prediction, setPrediction] = useState(null);
+  const [aggregatedExpenseData, setAggregatedExpenseData] = useState([]);
 
   useEffect(() => {
     const runLinearRegression = async () => {
       if (data.length === 0) {
         console.warn("No data available for prediction.");
+        setPrediction(null);
         return;
       }
 
-      // Prepare data for selected category
+      // Prepare data for selected category, excluding income
       const filteredData = data.filter(
-        (item) => item.category === selectedCategory
+        (item) => item.category === selectedCategory && item.type === "expense"
       );
 
       if (filteredData.length === 0) {
-        console.warn("No expense data available for the selected category.");
+        console.warn(
+          `No expense data available for the selected category ${selectedCategory}.`
+        );
+        setPrediction(null); // Reset prediction if no expense data
         return;
       }
 
-      // Calculate the average amount for prediction
+      // Calculate the average amount for prediction, excluding income
       const totalAmount = filteredData.reduce(
         (acc, item) => acc + item.amount,
         0
@@ -44,37 +49,39 @@ const LinearRegression = ({ data, selectedCategory }) => {
   }, [data, selectedCategory]);
 
   // Prepare data for Recharts
-  const chartData = data.map((item) => ({
-    type: item.type,
-    amount: item.amount,
-    date: new Date(item.date).toLocaleString("default", {
-      month: "long",
-      year: "numeric",
-    }),
-  }));
+  useEffect(() => {
+    const expenseData = data
+      .filter(
+        (item) => item.category === selectedCategory && item.type === "expense"
+      )
+      .reduce((acc, item) => {
+        const existingItem = acc.find((entry) => entry.date === item.date);
+        if (existingItem) {
+          existingItem.totalExpense += item.amount;
+        } else {
+          acc.push({
+            date: item.date,
+            totalExpense: item.amount,
+          });
+        }
+        return acc;
+      }, []);
 
-  const aggregatedExpenseData = chartData.reduce((acc, item) => {
-    if (item.type === "expense") {
-      const existingItem = acc.find((entry) => entry.date === item.date);
-      if (existingItem) {
-        existingItem.totalExpense += item.amount;
-      } else {
-        acc.push({ date: item.date, totalExpense: item.amount });
-      }
-    }
-    return acc;
-  }, []);
+    setAggregatedExpenseData(expenseData);
+  }, [data, selectedCategory]);
 
-  const regressionLineData = aggregatedExpenseData.map((item) => ({
-    date: item.date,
-    regressionLine: prediction !== null ? prediction : 0,
-  }));
+  const regressionLineData =
+    prediction !== null
+      ? aggregatedExpenseData.map((item) => ({
+          date: item.date,
+          regressionLine: prediction,
+        }))
+      : [];
 
-  // const combinedData = aggregatedExpenseData.concat(regressionLineData);
   return (
     <div className="chart-container">
       <h3>{`Expense Linear Regression Prediction for ${selectedCategory}`}</h3>
-      {prediction !== null ? (
+      {prediction !== null && aggregatedExpenseData.length > 0 ? (
         <LineChart
           className="line-chart"
           width={450}
@@ -92,7 +99,15 @@ const LinearRegression = ({ data, selectedCategory }) => {
             <Label value="Total Expense" angle={-90} position="insideLeft" />
           </YAxis>
           <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
-          <Tooltip />
+          <Tooltip
+            formatter={(value, name, props) => [value, "Total Expense"]}
+            labelFormatter={(label) =>
+              new Date(label).toLocaleDateString("default", {
+                month: "long",
+                year: "numeric",
+              })
+            }
+          />
           <Legend />
           <Line type="monotone" dataKey="totalExpense" stroke="#FF7E5F" />
           <Line
@@ -103,7 +118,7 @@ const LinearRegression = ({ data, selectedCategory }) => {
           />
         </LineChart>
       ) : (
-        <p>Loading prediction...</p>
+        <p>{`No expense data available for the selected category ${selectedCategory}.`}</p>
       )}
     </div>
   );

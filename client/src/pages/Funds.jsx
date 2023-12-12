@@ -19,8 +19,20 @@ const Funds = () => {
   };
   const funds = [
     {
-      name: "medical insurance",
+      name: "Gauranteed income plan",
       type: "low",
+    },
+    {
+      name: "high return plan",
+      type: "mid",
+    },
+    {
+      name: "insurance",
+      type: "high",
+    },
+    {
+      name: "medical ",
+      type: "mid",
     },
   ];
 
