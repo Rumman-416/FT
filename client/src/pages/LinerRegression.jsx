@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import ReactEcharts from "echarts-for-react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  Label,
+} from "recharts";
 
 const LinearRegression = ({ data, selectedCategory }) => {
   const [prediction, setPrediction] = useState(null);
@@ -11,6 +20,7 @@ const LinearRegression = ({ data, selectedCategory }) => {
         return;
       }
 
+      // Prepare data for selected category
       const filteredData = data.filter(
         (item) => item.category === selectedCategory
       );
@@ -20,104 +30,78 @@ const LinearRegression = ({ data, selectedCategory }) => {
         return;
       }
 
+      // Calculate the average amount for prediction
       const totalAmount = filteredData.reduce(
         (acc, item) => acc + item.amount,
         0
       );
+      const averageAmount = totalAmount / filteredData.length;
 
-      setPrediction(totalAmount / filteredData.length);
+      setPrediction(averageAmount);
     };
 
     runLinearRegression();
   }, [data, selectedCategory]);
 
-  const chartData = data
-    .map((item) => ({
-      type: item.type,
-      amount: item.amount,
-      date: new Date(item.date).toLocaleString("default", {
-        month: "long",
-        year: "numeric",
-      }),
-    }))
-    .sort((a, b) => new Date(a.date) - new Date(b.date));
+  // Prepare data for Recharts
+  const chartData = data.map((item) => ({
+    type: item.type,
+    amount: item.amount,
+    date: new Date(item.date).toLocaleString("default", {
+      month: "long",
+      year: "numeric",
+    }),
+  }));
 
-  const getOption = () => {
-    const colors = {
-      expense: "#FF7E5F",
-      regressionLine: "#0000FF",
-    };
+  const aggregatedExpenseData = chartData.reduce((acc, item) => {
+    if (item.type === "expense") {
+      const existingItem = acc.find((entry) => entry.date === item.date);
+      if (existingItem) {
+        existingItem.totalExpense += item.amount;
+      } else {
+        acc.push({ date: item.date, totalExpense: item.amount });
+      }
+    }
+    return acc;
+  }, []);
 
-    const uniqueDates = [
-      ...new Set(chartData.map((item) => item.date)),
-    ].reverse();
+  const regressionLineData = aggregatedExpenseData.map((item) => ({
+    date: item.date,
+    regressionLine: prediction !== null ? prediction : 0,
+  }));
 
-    const aggregatedExpenseData = uniqueDates.map((date) => ({
-      date,
-      totalExpense: chartData
-        .filter((item) => item.type === "expense" && item.date === date)
-        .reduce((acc, item) => acc + item.amount, 0),
-    }));
-
-    const regressionLineData = Array(aggregatedExpenseData.length).fill(
-      prediction !== null ? prediction : 0
-    );
-
-    return {
-      color: [colors.expense, colors.regressionLine],
-      legend: {
-        data: ["Expense", "Regression Line"],
-      },
-      xAxis: {
-        type: "category",
-        data: aggregatedExpenseData.map((item) => item.date),
-        axisLabel: {
-          rotate: 45,
-          textStyle: {
-            color: "#333",
-          },
-        },
-      },
-      yAxis: {
-        type: "value",
-        axisLabel: {
-          textStyle: {
-            color: "#333",
-          },
-        },
-      },
-      series: [
-        {
-          name: "Expense",
-          type: "line",
-          data: aggregatedExpenseData.map((item) => ({
-            value: item.totalExpense,
-            itemStyle: { color: colors.expense },
-          })),
-          label: {
-            show: true,
-            position: "top",
-            formatter: "{c}",
-          },
-        },
-        {
-          name: "Regression Line",
-          type: "line",
-          data: regressionLineData,
-          lineStyle: {
-            color: colors.regressionLine,
-            type: "dashed",
-          },
-        },
-      ],
-    };
-  };
-
+  // const combinedData = aggregatedExpenseData.concat(regressionLineData);
   return (
-    <div>
+    <div className="chart-container">
       <h3>{`Expense Linear Regression Prediction for ${selectedCategory}`}</h3>
       {prediction !== null ? (
-        <ReactEcharts option={getOption()} style={{ height: "400px" }} />
+        <LineChart
+          className="line-chart"
+          width={450}
+          height={300}
+          data={aggregatedExpenseData.concat(regressionLineData)}
+          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+        >
+          <XAxis
+            dataKey="date"
+            tick={() => null} // Remove individual ticks
+          >
+            <Label value="Date" offset={0} position="insideBottom" />
+          </XAxis>
+          <YAxis>
+            <Label value="Total Expense" angle={-90} position="insideLeft" />
+          </YAxis>
+          <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
+          <Tooltip />
+          <Legend />
+          <Line type="monotone" dataKey="totalExpense" stroke="#FF7E5F" />
+          <Line
+            type="monotone"
+            dataKey="regressionLine"
+            stroke="#0000FF"
+            strokeDasharray="5 5"
+          />
+        </LineChart>
       ) : (
         <p>Loading prediction...</p>
       )}

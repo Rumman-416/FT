@@ -60,6 +60,14 @@ const SideNav = () => {
           >
             Prediction
           </Link>
+          <Link
+            className="block py-2 text-[#23253a] hover:text-[#fff]"
+            to={{
+              pathname: "/funds",
+            }}
+          >
+            Funds
+          </Link>
         </div>
       </div>
     </div>

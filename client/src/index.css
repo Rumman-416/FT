@@ -9,3 +9,19 @@
 .content {
   min-height: 100vh;
 }
+
+.chart-container {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.line-chart {
+  width: 100%;
+}
+
+/* Add media query for smaller screens */
+@media screen and (min-width: 350px) {
+  .line-chart {
+    width: 100%;
+  }
+}

@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 const ShowData = React.lazy(() => import("./pages/ShowData"));
 const AddTransaction = React.lazy(() => import("./pages/AddTransaction"));
 const Prediction = React.lazy(() => import("./pages/Prediction"));
+const Funds = React.lazy(() => import("./pages/Funds"));
 const App = () => {
   return (
     <>
@@ -36,6 +37,16 @@ const App = () => {
             <ProtedtedRoutes>
               <Suspense>
                 <Prediction />
+              </Suspense>
+            </ProtedtedRoutes>
+          }
+        />
+        <Route
+          path="/funds"
+          element={
+            <ProtedtedRoutes>
+              <Suspense>
+                <Funds />
               </Suspense>
             </ProtedtedRoutes>
           }
