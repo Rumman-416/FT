@@ -71,11 +71,13 @@ const LinearRegression = ({ data, selectedCategory }) => {
   }, [data, selectedCategory]);
 
   const regressionLineData =
-    prediction !== null
-      ? aggregatedExpenseData.map((item) => ({
-          date: item.date,
-          regressionLine: prediction,
-        }))
+    prediction !== null && aggregatedExpenseData.length > 0
+      ? [
+          {
+            date: aggregatedExpenseData[0].date, // Use the first date from expense data
+            regressionLine: prediction,
+          },
+        ]
       : [];
 
   return (
