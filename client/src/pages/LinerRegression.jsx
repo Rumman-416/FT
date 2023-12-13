@@ -55,7 +55,10 @@ const LinearRegression = ({ data, selectedCategory }) => {
         (item) => item.category === selectedCategory && item.type === "expense"
       )
       .reduce((acc, item) => {
-        const existingItem = acc.find((entry) => entry.date === item.date);
+        const existingItem = acc.find(
+          (entry) =>
+            new Date(entry.date).getMonth() === new Date(item.date).getMonth()
+        );
         if (existingItem) {
           existingItem.totalExpense += item.amount;
         } else {
@@ -74,7 +77,6 @@ const LinearRegression = ({ data, selectedCategory }) => {
     prediction !== null && aggregatedExpenseData.length > 0
       ? [
           {
-            date: aggregatedExpenseData[0].date, // Use the first date from expense data
             regressionLine: prediction,
           },
         ]
@@ -91,12 +93,7 @@ const LinearRegression = ({ data, selectedCategory }) => {
           data={aggregatedExpenseData.concat(regressionLineData)}
           margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
         >
-          <XAxis
-            dataKey="date"
-            tick={() => null} // Remove individual ticks
-          >
-            <Label value="Date" offset={0} position="insideBottom" />
-          </XAxis>
+          <XAxis dataKey="date" />
           <YAxis>
             <Label value="Total Expense" angle={-90} position="insideLeft" />
           </YAxis>
